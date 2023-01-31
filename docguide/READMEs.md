@@ -16,7 +16,7 @@ GitHub and Gitiles renders it when you browse the directory.
 For example, the file /README.md is rendered when you view the contents of the
 containing directory:
 
-https://github.com/Preggy-Health/styleguide/tree/gh-pages
+https://github.com/Preggy-Health/styleguide/go
 
 Also `README.md` at `HEAD` ref is rendered by Gitiles when displaying repository
 index:

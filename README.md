@@ -19,8 +19,7 @@ that apply to that project.
 *   [Shell Style Guide][sh]
 *   [TypeScript Style Guide][ts]
 
-This project also contains [cpplint][cpplint], a tool to assist with style guide
-compliance.
+
 
 If your project requires that you create a new XML document format, the
 [XML Document Format Style Guide][xml] may be helpful. In addition to actual
@@ -44,7 +43,6 @@ The following Dart style guide lives outside of this project:
 [htmlcss]: https://Preggy-Health.github.io/styleguide/htmlcssguide.html
 [js]: https://Preggy-Health.github.io/styleguide/jsguide.html
 [ts]: https://Preggy-Health.github.io/styleguide/tsguide.html
-[cpplint]: https://github.com/Preggy-Health/styleguide/tree/gh-pages/cpplint
 [xml]: https://Preggy-Health.github.io/styleguide/xmlstyle.html
 [dart]: https://www.dartlang.org/guides/language/effective-dart
 [ccl]: https://creativecommons.org/licenses/by/3.0/
