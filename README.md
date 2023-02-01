@@ -15,6 +15,7 @@ that apply to that project.
 *   [Go Style Guide][go]
 *   [HTML/CSS Style Guide][htmlcss]
 *   [JavaScript Style Guide][js]
+*   [JSON Style Guide][json]
 *   [Python Style Guide][py]
 *   [Shell Style Guide][sh]
 *   [TypeScript Style Guide][ts]
@@ -42,6 +43,7 @@ The following Dart style guide lives outside of this project:
 [sh]: https://Preggy-Health.github.io/styleguide/shellguide.html
 [htmlcss]: https://Preggy-Health.github.io/styleguide/htmlcssguide.html
 [js]: https://Preggy-Health.github.io/styleguide/jsguide.html
+[json]: https://Preggy-Health.github.io/styleguide/jsoncstyleguide.html
 [ts]: https://Preggy-Health.github.io/styleguide/tsguide.html
 [xml]: https://Preggy-Health.github.io/styleguide/xmlstyle.html
 [dart]: https://www.dartlang.org/guides/language/effective-dart
