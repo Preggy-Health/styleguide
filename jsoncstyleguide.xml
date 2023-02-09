@@ -3,7 +3,7 @@
 <GUIDE title="Preggy Health JSON Style Guide">
 
 <p align="right">
-Revision 0.9
+Revision 1.0
 </p>
 
 <address>
@@ -336,14 +336,10 @@ Latitudes/Longitudes should be formatted as recommended by ISO 6709.
 <CODE_SNIPPET>
 object {
   string apiVersion?;
+  string requestId?;
   string context?;
-  string id?;
-  string method?;
+  string kind?;
   object {
-    string id?
-  }* params?;
-  object {
-    string kind?;
     string fields?;
     string etag?;
     string id?;
@@ -408,20 +404,20 @@ Property Value Type: string<br />Parent: -
 Property Value Type: string<br />Parent: -
 </SUMMARY>
 <BODY>
-<p>Client sets this value and server echos data in the response.   This is useful in JSON-P and batch situations , where the user can use the <code>context</code> to correlate responses with requests.  This property is a top-level property because the <code>context</code> should present regardless of whether the response was successful or an error.  <code>context</code> differs from <code>id</code> in that <code>context</code> is specified by the user while <code>id</code> is assigned by the service.</p><p>Example:</p><p>Request #1:</p>
+<p>Client sets this value and server processes response data with it.   This is mainly the service identifier name, where the user can use the <code>context</code> to correlate responses with requests.  This property is a top-level property because the <code>context</code> should present regardless of whether the response was successful or an error. </p><p>Example:</p><p>Request #1:</p>
 <CODE_SNIPPET>
-https://preggy.health/myapi?context=bart
+https://preggy.health/myapi?context=payment
 
 </CODE_SNIPPET>
 <p>Request #2:</p>
 <CODE_SNIPPET>
-https://preggy.health/myapi?context=lisa
+https://preggy.health/myapi?context=patient
 
 </CODE_SNIPPET>
 <p>Response #1:</p>
 <CODE_SNIPPET>
 {
-  "context": "bart",
+  "context": "payment",
   "data": {
     "items": []
   }
@@ -431,7 +427,7 @@ https://preggy.health/myapi?context=lisa
 <p>Response #2:</p>
 <CODE_SNIPPET>
 {
-  "context": "lisa",
+  "context": "patient",
   "data": {
     "items": []
   }
@@ -441,61 +437,39 @@ https://preggy.health/myapi?context=lisa
 <p>Common JavaScript handler code to process both responses:</p>
 <CODE_SNIPPET>
 function handleResponse(response) {
-  if (response.result.context == "bart") {
-    // Update the "Bart" section of the page.
-  } else if (response.result.context == "lisa") {
-    // Update the "Lisa" section of the page.
+  if (response.result.context == "payment") {
+    // Update the "Payment" section of the page.
+  } else if (response.result.context == "patient") {
+    // Update the "Patient" section of the page.
   }
 }
 
 </CODE_SNIPPET>
 </BODY>
 </STYLEPOINT>
-<STYLEPOINT title="id">
+<STYLEPOINT title="requestId">
 <SUMMARY>
 Property Value Type: string<br />Parent: -
 </SUMMARY>
 <BODY>
 <p>A server supplied identifier for the response (regardless of whether the response is a success or an error).  This is useful for correlating server logs with individual responses received at a client.</p><p>Example:</p>
 <CODE_SNIPPET>
-{ "id": "1" }
+{ "requestId": "1" }
 
 </CODE_SNIPPET>
 </BODY>
 </STYLEPOINT>
-<STYLEPOINT title="method">
+<STYLEPOINT title="kind">
 <SUMMARY>
 Property Value Type: string<br />Parent: -
 </SUMMARY>
 <BODY>
-<p>Represents the operation to perform, or that was performed, on the data.  In the case of a JSON request, the <code>method</code> property can be used to indicate which operation to perform on the data.  In the case of a JSON response, the <code>method</code> property can indicate the operation performed on the data.</p><p>One example of this is in JSON-RPC requests, where <code>method</code> indicates the operation to perform on the <code>params</code> property:</p>
+  <p>The <code>kind</code> property serves as a guide to what type of information this particular endpoint processes.  It is the endpoint associated with the context property </p><p>Example:</p>
 <CODE_SNIPPET>
 {
-  "method": "people.get",
-  "params": {
-    "userId": "@me",
-    "groupId": "@self"
-  }
+  "context": "payments",
+  "kind": "pay"
 }
-
-</CODE_SNIPPET>
-</BODY>
-</STYLEPOINT>
-<STYLEPOINT title="params">
-<SUMMARY>
-Property Value Type: object<br />Parent: -
-</SUMMARY>
-<BODY>
-<p>This object serves as a map of input parameters to send to an RPC request.  It can be used in conjunction with the <code>method</code> property to execute an RPC function.  If an RPC function does not need parameters, this property can be omitted.</p><p>Example:</p>
-<CODE_SNIPPET>
-{
-  "method": "people.get",
-  "params": {
-    "userId": "@me",
-    "groupId": "@self"
-  }
-}
-
 </CODE_SNIPPET>
 </BODY>
 </STYLEPOINT>
@@ -520,7 +494,7 @@ Property Value Type: object<br />Parent: -
     "code": 404,
     "message": "File Not Found",
     "errors": [{
-      "domain": "Calendar",
+      "domain": "Payment",
       "reason": "ResourceNotFoundException",
       "message": "File Not Found
     }]
@@ -533,19 +507,6 @@ Property Value Type: object<br />Parent: -
 </CATEGORY>
 <CATEGORY title="Reserved Property Names in the data object">
 <p>The <code>data</code> property of the JSON object may contain the following properties.</p>
-<STYLEPOINT title="data.kind">
-<SUMMARY>
-Property Value Type: string<br />Parent: <code>data</code>
-</SUMMARY>
-<BODY>
-<p>The <code>kind</code> property serves as a guide to what type of information this particular object stores.  It can be present at the <code>data</code> level, or at the <code>items</code> level, or in any object where its helpful to distinguish between various types of objects.  If the <code>kind</code> object is present, it should be the first property in the object (See the "Property Ordering" section below for more details).</p><p>Example:</p>
-<CODE_SNIPPET>
-// "Kind" indicates  "appointments" in the Pregnancy Records API.
-{"data": {"kind": "appointments"}}
-
-</CODE_SNIPPET>
-</BODY>
-</STYLEPOINT>
 <STYLEPOINT title="data.fields">
 <SUMMARY>
 Property Value Type: string<br />Parent: <code>data</code>
@@ -555,7 +516,6 @@ Property Value Type: string<br />Parent: <code>data</code>
 <CODE_SNIPPET>
 {
   "data": {
-    "kind": "user",
     "fields": "name,id",
     "id": "penny",
     "name": "Penny"
@@ -642,7 +602,7 @@ Property Value Type: boolean<br />Parent: <code>data (or any child element)</cod
 Property Value Type: array<br />Parent: <code>data</code>
 </SUMMARY>
 <BODY>
-<p>The property name <code>items</code> is reserved to represent an array of items (for example, photos in Picasa, videos in YouTube).  This construct is intended to provide a standard location for collections related to the current result.  For example, the JSON output could be plugged into a generic pagination system that knows to page on the <code>items</code> array.  If <code>items</code> exists, it should be the last property in the <code>data</code> object (See the "Property Ordering" section below for more details).</p><p>Example:</p>
+<p>The property name <code>items</code> is reserved to represent an array of items (for example, tracking data in Diet Tracking, appointments in Patient Appointments).  This construct is intended to provide a standard location for collections related to the current result.  For example, the JSON output could be plugged into a generic pagination system that knows to page on the <code>items</code> array.  If <code>items</code> exists, it should be the last property in the <code>data</code> object (See the "Property Ordering" section below for more details).</p><p>Example:</p>
 <CODE_SNIPPET>
 {
   "data": {
@@ -735,7 +695,7 @@ Property Value Type: string<br />Parent: <code>data</code>
 <CODE_SNIPPET>
 {
   "data": {
-    "pagingLinkTemplate": "https://preggy.health/records/hl=en&amp;pId=PH0012384&amp;start={index}&amp;sa=N"
+    "pagingLinkTemplate": "https://preggy.health/records/pl=en&amp;pId=PH0012384&amp;start={index}"
   }
 }
 
@@ -942,38 +902,6 @@ Property Value Type: string<br />Parent: <code>error.errors</code>
 </CODE_SNIPPET>
 </BODY>
 </STYLEPOINT>
-<STYLEPOINT title="error.errors[].location">
-<SUMMARY>
-Property Value Type: string<br />Parent: <code>error.errors</code>
-</SUMMARY>
-<BODY>
-<p>The location of the error (the interpretation of its value depends on <code>locationType</code>).</p><p>Example:</p>
-<CODE_SNIPPET>
-{
-  "error":{
-    "errors": [{"location": ""}]
-  }
-}
-
-</CODE_SNIPPET>
-</BODY>
-</STYLEPOINT>
-<STYLEPOINT title="error.errors[].locationType">
-<SUMMARY>
-Property Value Type: string<br />Parent: <code>error.errors</code>
-</SUMMARY>
-<BODY>
-<p>Indicates how the <code>location</code> property should be interpreted.</p><p>Example:</p>
-<CODE_SNIPPET>
-{
-  "error":{
-    "errors": [{"locationType": ""}]
-  }
-}
-
-</CODE_SNIPPET>
-</BODY>
-</STYLEPOINT>
 <STYLEPOINT title="error.errors[].extendedHelp">
 <SUMMARY>
 Property Value Type: string<br />Parent: <code>error.errors</code>
@@ -1009,31 +937,20 @@ Property Value Type: string<br />Parent: <code>error.errors</code>
 </CATEGORY>
 <CATEGORY title="Property Ordering">
 <p>Properties can be in any order within the JSON object.  However, in some cases the ordering of properties can help parsers quickly interpret data and lead to better performance.  One example is a pull parser in a mobile environment, where performance and memory are critical, and unnecessary parsing should be avoided.</p>
-<STYLEPOINT title="Kind Property">
-<SUMMARY>
-<code>kind</code> should be the first property
-</SUMMARY>
-<BODY>
-<p>Suppose a parser is responsible for parsing a raw JSON stream into a specific object.  The <code>kind</code> property guides the parser to instantiate the appropriate object.  Therefore it should be the first property in the JSON object.  This only applies when objects have a <code>kind</code> property (usually found in the <code>data</code> and <code>items</code> properties).</p>
-</BODY>
-</STYLEPOINT>
 <STYLEPOINT title="Items Property">
 <SUMMARY>
 <code>items</code> should be the last property in the <code>data</code> object
 </SUMMARY>
 <BODY>
-<p>This allows all of the collection's properties to be read before reading each individual item.  In cases where there are a lot of items, this avoids unnecessarily parsing those items when the developer only needs fields from the data.</p>
+<p>This allows all the collection's properties to be read before reading each individual item.  In cases where there are a lot of items, this avoids unnecessarily parsing those items when the developer only needs fields from the data.</p>
 </BODY>
 </STYLEPOINT>
 <STYLEPOINT title="Property Ordering Example">
 <BODY>
 <CODE_SNIPPET>
-// The "kind" property distinguishes between an "appointments" and an "appointment".
-// "Kind" is always the first property in its parent object.
 // The "items" property is the last property in the "data" object.
 {
   "data": {
-    "kind": "appointments",
     "title": "Preg One Appointments",
     "description": "First pregnancy appointment in user's account",
     "items": [
@@ -1059,20 +976,23 @@ This example demonstrates how the Preggy Health search records could be represen
 <CODE_SNIPPET>
 {
   "apiVersion": "1.0",
-  "id": "1",
+  "requestId": "1",
+  "context": "records",
+  "kind": "appointments",
   "data": {
-    "query": "patient zuma",
-    "time": "0.1",
+    "id": "22",
+    "patientId": "PH12334",
+    "patientName": "Maame Yaa",
     "currentItemCount": 10,
     "itemsPerPage": 10,
     "startIndex": 11,
     "totalItems": 2700000,
-    "nextLink": "https://preggy.health/records?hl=en&amp;q=chicago+style+pizza&amp;start=20&amp;sa=N"
-    "previousLink": "https://preggy.health/records?hl=en&amp;q=chicago+style+pizza&amp;start=0&amp;sa=N",
-    "pagingLinkTemplate": "https://preggy.health/record/hl=en&amp;q=chicago+style+pizza&amp;start={index}&amp;sa=N",
+    "nextLink": "https://preggy.health/records?pl=en&amp;pId=PH12334&amp;start=20&amp;apiVersion=1.0&amp;context=records&amp;kind=appointments"
+    "previousLink": "https://preggy.health/records?pl=en&amp;pId=PH12334&amp;start=0&amp;apiVersion=1.0&amp;context=records&amp;kind=appointments",
+    "pagingLinkTemplate": "https://preggy.health/record/pl=en&amp;pId=PH12334&amp;start={index}&amp;apiVersion=1.0&amp;context=records&amp;kind=appointments",
     "items": [
       {
-        "title": "Zuma Nelsom"
+        "title": "Appointment A"
         // More fields for the search results
       }
       // More search results
@@ -1081,7 +1001,6 @@ This example demonstrates how the Preggy Health search records could be represen
 }
 
 </CODE_SNIPPET>
-<p>Here's how each of the entries will be represented (the background colors correspond to the page key):</p><ul><li>Results <span style="background-color:rgb(180, 167, 214)">11</span> - 20 of about 2,700,000 = startIndex</li><li>Results 11 - <span style="background-color:rgb(255, 217, 102)">20</span> of about 2,700,000 = startIndex + currentItemCount - 1</li><li>Results 11 - 20 of about <span style="background-color:rgb(246, 178, 107)">2,700,000</span> = totalItems</li><li><span style="background-color:rgb(234, 153, 153)">Search results</span> = items (formatted appropriately)</li><li><span style="background-color:rgb(182, 215, 168)">Previous/Next</span> = previousLink / nextLink</li><li><span style="background-color:rgb(159, 197, 232)">Numbered links in "Preggy"</span> = Derived from "pageLinkTemplate".  The developer is responsible for calculating the values for {index} and substituting those values into the "pageLinkTemplate".  The pageLinkTemplate's {index} variable is calculated as follows:<ul><li>Index #1 = 0 * itemsPerPage = 0</li><li>Index #2 = 2 * itemsPerPage = 10</li><li>Index #3 = 3 * itemsPerPage = 20</li><li>Index #N = N * itemsPerPage</li></ul></li></ul>
 </BODY>
 </STYLEPOINT>
 </CATEGORY>
